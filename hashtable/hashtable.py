@@ -22,7 +22,11 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
+        self.capacity = capacity
+        if capacity < MIN_CAPACITY:
+            self.arr = []
+        else:
+            self.arr = [None] * capacity
 
     def get_num_slots(self):
         """
@@ -35,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        return len(self.arr)
 
     def get_load_factor(self):
         """
@@ -44,7 +48,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        total = 0
+        for item in self.arr:
+            if item is not None:
+                total +=1
+        return total / self.capacity
 
     def fnv1(self, key):
         """
@@ -63,7 +71,10 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-
+        hash = 5381
+        for x in key:
+            hash = ((hash << 5) + hash) + ord(x)
+        return hash & 0xFFFFFFFF
 
     def hash_index(self, key):
         """
@@ -82,7 +93,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        if self.arr.count(None) == 0:
+            self.resize(self.capacity+1)
+        slot = self.hash_index(key)
+        self.arr[slot] = HashTableEntry(key,value)
 
     def delete(self, key):
         """
@@ -93,7 +107,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        self.put(key,None)
 
     def get(self, key):
         """
@@ -104,7 +118,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        slot = self.hash_index(key)
+        hash_val = self.arr[slot]
+        if hash_val is not None:
+            return hash_val.value
 
     def resize(self, new_capacity):
         """
@@ -114,7 +131,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        if new_capacity < MIN_CAPACITY:
+            return []
+        self.capacity = new_capacity
+        old_arr = self.arr
+        self.arr = [None] * new_capacity
+        for item in old_arr:
+            if item is not None:
+                self.put(item.key,item.value)
+                
 
 
 if __name__ == "__main__":
